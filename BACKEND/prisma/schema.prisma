@@ -1,18 +1,17 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// 1. Model untuk User (Admin & Customer)
+// 1. Model untuk User (Admin)
 enum Role {
   CUSTOMER
   ADMIN
@@ -23,50 +22,51 @@ model User {
   email     String   @unique
   password  String
   nama      String
-  role      Role     @default(CUSTOMER)
-  orders    Order[]
+  role      Role     @default(ADMIN)
   createdAt DateTime @default(now())
 }
 
 // 2. Model untuk Menu Makanan
 model Menu {
-  id           String      @id @default(uuid())
-  nama         String
-  harga        Float
-  deskripsi    String?
-  stok         Int
-  category     String
-  imageURL     String?
-  initialStock Int
-  unit         String
-  createdAt    DateTime    @default(now())
-  orderItems   OrderItem[]
+  id          String      @id @default(uuid())
+  nama        String
+  harga       Float
+  deskripsi   String?
+  category    String
+  imageURL    String?     // URL or file path of the menu image
+  isAvailable Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
 }
 
 // 3. Model untuk Induk Pesanan
 enum OrderStatus {
   PENDING
-  DIPROSES
-  SELESAI
-  DIBATALKAN
+  PAID
+  NOT_PAID
 }
 
 model Order {
-  id         String   @id @default(uuid())
-  type       String
-  notes      String?
-  menuItemId Int[]
-  quantities Int[]
-  createdAt  DateTime @default(now())
+  id            String      @id @default(uuid())
+  customerName  String
+  customerEmail String
+  customerPhone String
+  paymentMethod String
+  receiptImage  String?     // Path to uploaded receipt image
+  status        OrderStatus @default(PENDING)
+  totalPrice    Float
+  createdAt     DateTime    @default(now())
+  orderItems    OrderItem[]
 }
 
-// 4. Model untuk Detail Item yang Dipesan (Karena 1 order bisa banyak makanan)
-// model OrderItem {
-//   id        String @id @default(uuid())
-//   orderId   String
-//   order     Order  @relation(fields: [orderId], references: [id])
-//   menuId    String
-//   menu      Menu   @relation(fields: [menuId], references: [id])
-//   kuantitas Int
-//   harga     Float // Menyimpan harga saat dibeli (jika di masa depan harga menu berubah)
-//}
+// 4. Model untuk Detail Item yang Dipesan (1 order bisa banyak menu)
+model OrderItem {
+  id        String @id @default(uuid())
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuId    String
+  menu      Menu   @relation(fields: [menuId], references: [id])
+  kuantitas Int
+  harga     Float  // Menyimpan harga saat dibeli (jika di masa depan harga menu berubah)
+}
+
