@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// 1. Model untuk User (Admin & Customer)
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  nama      String
+  role      Role     @default(CUSTOMER)
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+// 2. Model untuk Menu Makanan
+model Menu {
+  id           String      @id @default(uuid())
+  nama         String
+  harga        Float
+  deskripsi    String?
+  stok         Int
+  category     String
+  imageURL     String?
+  initialStock Int
+  unit         String
+  createdAt    DateTime    @default(now())
+  orderItems   OrderItem[]
+}
+
+// 3. Model untuk Induk Pesanan
+enum OrderStatus {
+  PENDING
+  DIPROSES
+  SELESAI
+  DIBATALKAN
+}
+
+model Order {
+  id         String   @id @default(uuid())
+  type       String
+  notes      String?
+  menuItemId Int[]
+  quantities Int[]
+  createdAt  DateTime @default(now())
+}
+
+// 4. Model untuk Detail Item yang Dipesan (Karena 1 order bisa banyak makanan)
+// model OrderItem {
+//   id        String @id @default(uuid())
+//   orderId   String
+//   order     Order  @relation(fields: [orderId], references: [id])
+//   menuId    String
+//   menu      Menu   @relation(fields: [menuId], references: [id])
+//   kuantitas Int
+//   harga     Float // Menyimpan harga saat dibeli (jika di masa depan harga menu berubah)
+//}
