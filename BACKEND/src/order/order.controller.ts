@@ -5,7 +5,7 @@ import { extname } from 'path';
 import { OrderService } from './order.service';
 import { JwtGuard } from '../auth/jwt.guard';
 
-@Controller('order')
+@Controller('/api/order')
 export class OrderController {
   constructor(private orderService: OrderService) {}
 

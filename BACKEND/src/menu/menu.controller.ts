@@ -15,7 +15,7 @@ import { MenuService } from './menu.service';
 import { CreateMenuDto, UpdateMenuDto } from './dto';
 import { JwtGuard } from '../auth/jwt.guard';
 
-@Controller('menu')
+@Controller('/api/menu')
 export class MenuController {
   constructor(private menuService: MenuService) {}
 

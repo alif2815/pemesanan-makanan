@@ -26,7 +26,7 @@ model Menu {
   deskripsi   String?
   category    String
   imageURL    String?     // URL or file path of the menu image
-  isAvailable Boolean     @default(true)
+  isAvailable Boolean?    @default(true)
   stock       Int         @default(0)
   createdAt   DateTime    @default(now())
   orderItems  OrderItem[]
@@ -40,7 +40,6 @@ model Order {
   customerPhone String
   paymentMethod String
   receiptImage  String?     // Path to uploaded receipt image
-  status        String      @default("PENDING")
   totalPrice    Float
   createdAt     DateTime    @default(now())
   orderItems    OrderItem[]
@@ -67,7 +66,7 @@ model Reservation {
   date           DateTime
   time           String
   numberOfPeople Int
-  status         String    @default("PENDING")
+  status         orderStatus @default(PENDING)
   createdAt      DateTime  @default(now())
 }
 
@@ -77,8 +76,18 @@ model Transaction {
   orderId       String    @unique
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   amount        Float
-  paymentMethod String
-  status        String    @default("PENDING")
+  paymentMethod paymentMethod
+  status        orderStatus @default(PENDING)
   paymentDate   DateTime?
   createdAt     DateTime  @default(now())
+}
+enum paymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  E_WALLET
+}
+enum orderStatus {
+ PAID
+ NOT_PAID
 }
