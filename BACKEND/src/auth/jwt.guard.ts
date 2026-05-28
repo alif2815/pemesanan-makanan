@@ -15,14 +15,14 @@ export class JwtGuard implements CanActivate {
 
     const parts = authHeader.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
-      throw new UnauthorizedException('Format token salah (harus Bearer <token>)');
+      throw new UnauthorizedException('Format token salah (harus: Bearer <token>)');
     }
 
     const token = parts[1];
     const decoded = await this.authService.verifyToken(token);
 
-    if (!decoded || (decoded as any).role !== 'ADMIN') {
-      throw new UnauthorizedException('Token tidak valid atau hak akses tidak diizinkan');
+    if (!decoded) {
+      throw new UnauthorizedException('Token tidak valid atau sudah expired');
     }
 
     request.user = decoded;

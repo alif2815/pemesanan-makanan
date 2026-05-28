@@ -1,28 +1,20 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 // 1. Model untuk User (Admin)
-enum Role {
-  CUSTOMER
-  ADMIN
-}
-
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
   nama      String
-  role      Role     @default(ADMIN)
+  role      String   @default("ADMIN")
   createdAt DateTime @default(now())
 }
 
@@ -35,17 +27,12 @@ model Menu {
   category    String
   imageURL    String?     // URL or file path of the menu image
   isAvailable Boolean     @default(true)
+  stock       Int         @default(0)
   createdAt   DateTime    @default(now())
   orderItems  OrderItem[]
 }
 
 // 3. Model untuk Induk Pesanan
-enum OrderStatus {
-  PENDING
-  PAID
-  NOT_PAID
-}
-
 model Order {
   id            String      @id @default(uuid())
   customerName  String
@@ -53,10 +40,11 @@ model Order {
   customerPhone String
   paymentMethod String
   receiptImage  String?     // Path to uploaded receipt image
-  status        OrderStatus @default(PENDING)
+  status        String      @default("PENDING")
   totalPrice    Float
   createdAt     DateTime    @default(now())
   orderItems    OrderItem[]
+  transaction   Transaction?
 }
 
 // 4. Model untuk Detail Item yang Dipesan (1 order bisa banyak menu)
@@ -70,3 +58,27 @@ model OrderItem {
   harga     Float  // Menyimpan harga saat dibeli (jika di masa depan harga menu berubah)
 }
 
+// 5. Model untuk Reservasi Meja
+model Reservation {
+  id             String    @id @default(uuid())
+  name           String
+  email          String?
+  phone          String
+  date           DateTime
+  time           String
+  numberOfPeople Int
+  status         String    @default("PENDING")
+  createdAt      DateTime  @default(now())
+}
+
+// 6. Model untuk Transaksi
+model Transaction {
+  id            String    @id @default(uuid())
+  orderId       String    @unique
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount        Float
+  paymentMethod String
+  status        String    @default("PENDING")
+  paymentDate   DateTime?
+  createdAt     DateTime  @default(now())
+}
