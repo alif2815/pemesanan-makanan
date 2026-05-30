@@ -52,7 +52,7 @@ export class AuthService implements OnModuleInit {
         email: registerDto.email,
         password: hashedPassword,
         nama: registerDto.nama,
-        role: Role.USER,
+        role: (registerDto.role as Role) || Role.USER,
       },
     });
 
