@@ -14,6 +14,7 @@ import {
 import { MenuService } from './menu.service';
 import { CreateMenuDto, UpdateMenuDto } from './dto';
 import { JwtGuard } from '../auth/jwt.guard';
+import { AdminGuard } from '../auth/admin.guard';
 
 @Controller('/api/menu')
 export class MenuController {
@@ -59,7 +60,7 @@ export class MenuController {
    * Body: { nama, harga, deskripsi?, category, imageURL?, isAvailable?, stock? }
    */
   @Post()
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, AdminGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createMenuDto: CreateMenuDto) {
     return this.menuService.create(createMenuDto);
@@ -71,7 +72,7 @@ export class MenuController {
    * Body: { nama?, harga?, deskripsi?, category?, imageURL?, isAvailable?, stock? }
    */
   @Put(':id')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, AdminGuard)
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
@@ -85,7 +86,7 @@ export class MenuController {
    * Admin-only: Delete menu
    */
   @Delete(':id')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, AdminGuard)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('id') id: string) {
     return this.menuService.delete(id);

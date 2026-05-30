@@ -14,7 +14,7 @@ model User {
   email     String   @unique
   password  String
   nama      String
-  role      String   @default("ADMIN")
+  role      Role   @default(USER)
   createdAt DateTime @default(now())
 }
 
@@ -95,4 +95,9 @@ enum orderStatus {
   PENDING
   PAID
   NOT_PAID
+}
+
+enum Role {
+USER
+ADMIN
 }

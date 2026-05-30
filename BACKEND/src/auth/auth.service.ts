@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma.service';
 import { RegisterDto, LoginDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -51,7 +52,7 @@ export class AuthService implements OnModuleInit {
         email: registerDto.email,
         password: hashedPassword,
         nama: registerDto.nama,
-        role: registerDto.role || 'CUSTOMER',
+        role: Role.USER,
       },
     });
 
