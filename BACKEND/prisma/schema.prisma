@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,7 +24,7 @@ model Menu {
   harga       Float
   deskripsi   String?
   category    String
-  imageURL    String?     // URL or file path of the menu image
+  imageURL    String? // URL or file path of the menu image
   isAvailable Boolean?    @default(true)
   stock       Int         @default(0)
   createdAt   DateTime    @default(now())
@@ -34,14 +33,15 @@ model Menu {
 
 // 3. Model untuk Induk Pesanan
 model Order {
-  id            String      @id @default(uuid())
+  id            String       @id @default(uuid())
   customerName  String
   customerEmail String
   customerPhone String
   paymentMethod String
-  receiptImage  String?     // Path to uploaded receipt image
+  status        orderStatus  @default(PAID)
+  receiptImage  String? // Path to uploaded receipt image
   totalPrice    Float
-  createdAt     DateTime    @default(now())
+  createdAt     DateTime     @default(now())
   orderItems    OrderItem[]
   transaction   Transaction?
 }
@@ -54,40 +54,44 @@ model OrderItem {
   menuId    String
   menu      Menu   @relation(fields: [menuId], references: [id])
   kuantitas Int
-  harga     Float  // Menyimpan harga saat dibeli (jika di masa depan harga menu berubah)
+  harga     Float // Menyimpan harga saat dibeli (jika di masa depan harga menu berubah)
 }
 
 // 5. Model untuk Reservasi Meja
 model Reservation {
-  id             String    @id @default(uuid())
+  id             String      @id @default(uuid())
   name           String
   email          String?
   phone          String
   date           DateTime
   time           String
   numberOfPeople Int
-  status         orderStatus @default(PENDING)
-  createdAt      DateTime  @default(now())
+  status         orderStatus @default(PAID)
+  createdAt      DateTime    @default(now())
 }
 
 // 6. Model untuk Transaksi
 model Transaction {
-  id            String    @id @default(uuid())
-  orderId       String    @unique
-  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id            String        @id @default(uuid())
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
   amount        Float
   paymentMethod paymentMethod
-  status        orderStatus @default(PENDING)
+  status        orderStatus   @default(PAID)
   paymentDate   DateTime?
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime      @default(now())
 }
+
 enum paymentMethod {
   CASH
   CREDIT_CARD
   DEBIT_CARD
   E_WALLET
+  TRANSFER
 }
+
 enum orderStatus {
- PAID
- NOT_PAID
+  PENDING
+  PAID
+  NOT_PAID
 }

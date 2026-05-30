@@ -5,7 +5,7 @@ import { UpdateReservationDto } from './dto/update-reservation.dto';
 
 @Injectable()
 export class ReservationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(dto: CreateReservationDto) {
     try {
@@ -28,7 +28,15 @@ export class ReservationService {
 
   async update(id: string, dto: UpdateReservationDto) {
     await this.findOne(id);
-    return this.prisma.reservation.update({ where: { id }, data: { ...dto, ...(dto.date && { date: new Date(dto.date) }) } });
+    const { status, ...sisaDto } = dto;
+    return this.prisma.reservation.update({
+      where: { id }, 
+        data: {
+           ...sisaDto, 
+           ...(dto.date && { date: new Date(dto.date) }),
+           ...(status && { status: status as any }),
+          },
+    });
   }
 
   async remove(id: string) {

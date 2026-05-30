@@ -55,7 +55,7 @@ export class OrderService {
           paymentMethod: data.paymentMethod,
           receiptImage: data.receiptImage,
           totalPrice,
-          status: 'PENDING',
+          status: 'PAID',
           orderItems: {
             create: itemDetails.map(d => ({
               menuId: d.menuId,

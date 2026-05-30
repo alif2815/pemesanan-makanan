@@ -5,7 +5,7 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @Injectable()
 export class TransactionService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(dto: CreateTransactionDto) {
     // Check order exists
@@ -19,8 +19,8 @@ export class TransactionService {
           data: {
             orderId: dto.orderId,
             amount: dto.amount,
-            paymentMethod: dto.paymentMethod,
-            status: (dto.status as any) || 'PENDING',
+            paymentMethod: dto.paymentMethod as any,
+            status: (dto.status as any) || '',
             paymentDate: dto.status === 'SUCCESS' ? new Date() : null,
           },
         });
@@ -49,7 +49,16 @@ export class TransactionService {
 
   async update(id: string, dto: UpdateTransactionDto) {
     await this.findOne(id);
-    return this.prisma.transaction.update({ where: { id }, data: { ...dto, ...(dto.status === 'SUCCESS' && { paymentDate: new Date() }) } });
+    const { paymentMethod, status, ...sisaDto } = dto;
+    return this.prisma.transaction.update({
+      where: { id },
+      data: {
+        ...sisaDto,
+        ...(paymentMethod && { paymentMethod: paymentMethod as any }),
+        ...(status && { status: status as any }),
+        ...(status === 'SUCCESS' ? { paymentDate: new Date() } : {}),
+      },
+    });
   }
 
   async remove(id: string) {

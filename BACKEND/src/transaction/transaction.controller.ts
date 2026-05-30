@@ -4,7 +4,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { JwtGuard } from '../auth/jwt.guard';
 
-@Controller('transaction')
+@Controller('/api/transaction')
 export class TransactionController {
   constructor(private txService: TransactionService) {}
 

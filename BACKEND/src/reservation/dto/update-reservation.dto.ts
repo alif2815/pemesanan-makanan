@@ -27,6 +27,6 @@ export class UpdateReservationDto {
   numberOfPeople?: number;
 
   @IsOptional()
-  @IsIn(['PENDING', 'CONFIRMED', 'CANCELLED'])
+  @IsIn(['PAID', 'NOT_PAID', 'PENDING'])
   status?: string;
 }

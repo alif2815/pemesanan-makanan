@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `order` ADD COLUMN `status` ENUM('PENDING', 'PAID', 'NOT_PAID') NOT NULL DEFAULT 'PAID';

@@ -10,6 +10,6 @@ export class UpdateTransactionDto {
   paymentMethod?: string;
 
   @IsOptional()
-  @IsIn(['PENDING', 'SUCCESS', 'FAILED'])
+  @IsIn(['PAID', 'NOT_PAID', 'PENDING'])
   status?: string;
 }
